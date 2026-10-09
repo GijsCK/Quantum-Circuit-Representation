@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Explore how quantum gates change a single qubit on a Bloch sphere.">
+    <title>Qubit notebook</title>
+    <link rel="stylesheet" href="./src/styles.css">
+    <script type="module" src="./src/app.js"></script>
+  </head>
+  <body>
+    <main>
+      <header>
+        <span class="pixel-mark" aria-hidden="true"></span>
+        <div><h1>Qubit notebook</h1><p>One qubit. A few gates. See what changes.</p></div>
+      </header>
+
+      <div class="workspace">
+        <section class="panel sphere-panel" aria-labelledby="sphere-heading">
+          <h2 id="sphere-heading">The Bloch sphere</h2>
+          <svg id="bloch-sphere" viewBox="0 0 400 400" role="img" aria-labelledby="sphere-title sphere-description">
+            <title id="sphere-title">Single-qubit Bloch sphere</title>
+            <desc id="sphere-description">The state starts at the north pole, |0⟩.</desc>
+          </svg>
+          <p class="legend"><span class="swatch"></span> Current state <span class="swatch previous"></span> Previous</p>
+          <p class="muted">The sphere is a map of states. A gate moves the arrow.</p>
+        </section>
+
+        <section class="panel" aria-labelledby="controls-heading">
+          <h2 id="controls-heading">Apply a gate</h2>
+          <p>Start at |0⟩. Try H, then Z, then H again.</p>
+          <div id="gate-buttons" class="gate-buttons">
+            <button type="button" data-gate="H" title="Hadamard: exchange the x and z components and reverse y">H</button>
+            <button type="button" data-gate="X" title="Rotate 180° around x">X</button>
+            <button type="button" data-gate="Y" title="Rotate 180° around y">Y</button>
+            <button type="button" data-gate="Z" title="Rotate 180° around z">Z</button>
+            <button type="button" data-gate="S" title="Rotate 90° around z">S</button>
+            <button type="button" data-gate="T" title="Rotate 45° around z">T</button>
+          </div>
+          <p id="gate-explanation" class="explanation" role="status">Choose a gate to see its effect.</p>
+
+          <h2>Your qubit</h2>
+          <p class="equation">|ψ⟩ = α|0⟩ + β|1⟩</p>
+          <dl class="amplitudes"><div><dt>α</dt><dd id="alpha"></dd></div><div><dt>β</dt><dd id="beta"></dd></div></dl>
+          <h3>If measured along z</h3>
+          <div class="probability"><label for="probability-zero">|0⟩ <output id="percent-zero"></output></label><meter id="probability-zero" min="0" max="1" value="1">100%</meter></div>
+          <div class="probability"><label for="probability-one">|1⟩ <output id="percent-one"></output></label><meter id="probability-one" min="0" max="1" value="0">0%</meter></div>
+          <p class="coordinates" id="coordinates"></p>
+          <div class="actions"><button type="button" id="undo" disabled>Undo</button><button type="button" id="reset">Reset to |0⟩</button></div>
+        </section>
+      </div>
+
+      <section class="panel circuit-panel" aria-labelledby="circuit-heading">
+        <h2 id="circuit-heading">Gate sequence <span id="step-count">0 steps</span></h2>
+        <div class="circuit"><span class="initial-state">|0⟩</span><ol id="gate-history" aria-label="Gates in application order"></ol></div>
+        <p class="muted">Gates run from left to right. Undo removes the last step.</p>
+      </section>
+      <footer>A first sketch for learning. One pure qubit, with a fixed view.</footer>
+      <noscript>This notebook needs JavaScript to calculate states and draw the sphere.</noscript>
+    </main>
+  </body>
+</html>
