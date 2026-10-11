@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Explore how quantum gates change a single qubit on a Bloch sphere.">
+    <meta name="description" content="Explore one or two qubits, quantum gates, entanglement, and measurement probabilities.">
     <title>Qubit notebook</title>
     <link rel="stylesheet" href="./src/styles.css">
     <script type="module" src="./src/app.js"></script>
@@ -12,23 +12,55 @@
     <main>
       <header>
         <span class="pixel-mark" aria-hidden="true"></span>
-        <div><h1>Qubit notebook</h1><p>Explore single-qubit gates.</p></div>
+        <div><h1>Qubit notebook</h1><p>Explore gates, states, and entanglement.</p></div>
       </header>
+
+      <div class="qubit-toolbar">
+        <span id="qubit-count">1 qubit</span>
+        <button type="button" id="add-qubit">Add qubit q1 in |0⟩</button>
+        <button type="button" id="one-qubit" hidden>Start over with one qubit</button>
+      </div>
 
       <div class="workspace">
         <section class="panel sphere-panel" aria-labelledby="sphere-heading">
           <h2 id="sphere-heading">The Bloch sphere</h2>
-          <svg id="bloch-sphere" viewBox="0 0 400 400" role="img" tabindex="0" aria-labelledby="sphere-title sphere-description" aria-describedby="sphere-help">
-            <title id="sphere-title">Single-qubit Bloch sphere</title>
-            <desc id="sphere-description">The state starts at the north pole, |0⟩.</desc>
-          </svg>
+          <fieldset class="sphere-switches">
+            <legend>Show individual qubits</legend>
+            <label><input type="checkbox" id="show-q0" checked disabled> q0</label>
+            <label id="q1-visibility" hidden><input type="checkbox" id="show-q1" checked> q1</label>
+          </fieldset>
+          <div id="sphere-views">
+            <div id="sphere-view-q0" class="sphere-view">
+              <h3>q0</h3>
+              <svg id="bloch-sphere" class="bloch-sphere" viewBox="0 0 400 400" role="img" tabindex="0" aria-labelledby="sphere-title sphere-description" aria-describedby="sphere-help">
+                <title id="sphere-title">q0 Bloch sphere</title>
+                <desc id="sphere-description">The state starts at the north pole, |0⟩.</desc>
+              </svg>
+              <p id="coordinates-q0" class="coordinates"></p>
+              <p id="sphere-status-q0" class="muted"></p>
+            </div>
+            <div id="sphere-view-q1" class="sphere-view" hidden>
+              <h3>q1</h3>
+              <svg id="bloch-sphere-q1" class="bloch-sphere" viewBox="0 0 400 400" role="img" tabindex="0" aria-labelledby="sphere-title-q1 sphere-description-q1" aria-describedby="sphere-help">
+                <title id="sphere-title-q1">q1 Bloch sphere</title>
+                <desc id="sphere-description-q1">The state starts at the north pole, |0⟩.</desc>
+              </svg>
+              <p id="coordinates-q1" class="coordinates"></p>
+              <p id="sphere-status-q1" class="muted"></p>
+            </div>
+          </div>
+          <p id="no-spheres" class="muted" hidden>Select q0 or q1 above to show a sphere.</p>
           <p class="legend"><span class="swatch"></span> Current state <span class="swatch previous"></span> Previous</p>
           <p id="sphere-help" class="muted">Drag to rotate the view, or use the arrow keys.</p>
+          <p class="muted two-qubit-note">Each sphere shows one qubit's reduced state. Joint amplitudes and probabilities show the two-qubit output and its correlations. Hiding a sphere changes only the view.</p>
         </section>
 
         <section class="panel" aria-labelledby="controls-heading">
           <h2 id="controls-heading">Apply a gate</h2>
-          <p>Start at |0⟩. Try H, then Z, then H again.</p>
+          <p id="preparation-help">Start at |0⟩. Try H, then Z, then H again.</p>
+          <label class="control-label" for="gate-target">Apply single-qubit gates to
+            <select id="gate-target"><option value="0">q0</option><option id="target-q1" value="1" disabled>q1</option></select>
+          </label>
           <div id="gate-buttons" class="gate-buttons">
             <button type="button" data-gate="H" title="Hadamard: exchange the x and z components and reverse y">H</button>
             <button type="button" data-gate="X" title="Rotate 180° around x">X</button>
@@ -37,23 +69,55 @@
             <button type="button" data-gate="S" title="Rotate 90° around z">S</button>
             <button type="button" data-gate="T" title="Rotate 45° around z">T</button>
           </div>
+          <div id="two-qubit-controls" hidden>
+            <label class="control-label" for="gate-control">CNOT / CZ control → target
+              <select id="gate-control"><option value="0">q0 → q1</option><option value="1">q1 → q0</option></select>
+            </label>
+            <div class="two-gate-buttons">
+              <button type="button" data-two-gate="CNOT">CNOT</button>
+              <button type="button" data-two-gate="CZ">CZ</button>
+              <button type="button" data-two-gate="SWAP">SWAP</button>
+            </div>
+            <p class="muted">Try H on q0, then CNOT q0 → q1 to create a Bell state.</p>
+          </div>
           <p id="gate-explanation" class="explanation" role="status">Choose a gate to see its effect.</p>
 
-          <h2>Your qubit</h2>
-          <p class="equation">|ψ⟩ = α|0⟩ + β|1⟩</p>
-          <dl class="amplitudes"><div><dt>α</dt><dd id="alpha"></dd></div><div><dt>β</dt><dd id="beta"></dd></div></dl>
-          <h3>If measured along z</h3>
-          <div class="probability"><label for="probability-zero">|0⟩ <output id="percent-zero"></output></label><meter id="probability-zero" min="0" max="1" value="1">100%</meter></div>
-          <div class="probability"><label for="probability-one">|1⟩ <output id="percent-one"></output></label><meter id="probability-one" min="0" max="1" value="0">0%</meter></div>
-          <p class="coordinates" id="coordinates"></p>
+          <div id="single-state">
+            <h2>Your qubit</h2>
+            <p class="equation">|ψ⟩ = α|0⟩ + β|1⟩</p>
+            <dl class="amplitudes"><div><dt>α</dt><dd id="alpha"></dd></div><div><dt>β</dt><dd id="beta"></dd></div></dl>
+            <h3>If measured along z</h3>
+            <div class="probability"><label for="probability-zero">|0⟩ <output id="percent-zero"></output></label><meter id="probability-zero" min="0" max="1" value="1">100%</meter></div>
+            <div class="probability"><label for="probability-one">|1⟩ <output id="percent-one"></output></label><meter id="probability-one" min="0" max="1" value="0">0%</meter></div>
+            <p class="coordinates" id="coordinates"></p>
+          </div>
+          <div id="joint-state" hidden>
+            <h2>Joint state</h2>
+            <p class="muted">Basis order: |q0 q1⟩. Amplitudes include phase.</p>
+            <dl class="joint-amplitudes">
+              <div><dt>|00⟩</dt><dd id="amplitude-00"></dd></div>
+              <div><dt>|01⟩</dt><dd id="amplitude-01"></dd></div>
+              <div><dt>|10⟩</dt><dd id="amplitude-10"></dd></div>
+              <div><dt>|11⟩</dt><dd id="amplitude-11"></dd></div>
+            </dl>
+            <h3>If both measured along z</h3>
+            <div class="probability"><label for="probability-00">|00⟩ <output id="percent-00"></output></label><meter id="probability-00" min="0" max="1" value="1">100%</meter></div>
+            <div class="probability"><label for="probability-01">|01⟩ <output id="percent-01"></output></label><meter id="probability-01" min="0" max="1" value="0">0%</meter></div>
+            <div class="probability"><label for="probability-10">|10⟩ <output id="percent-10"></output></label><meter id="probability-10" min="0" max="1" value="0">0%</meter></div>
+            <div class="probability"><label for="probability-11">|11⟩ <output id="percent-11"></output></label><meter id="probability-11" min="0" max="1" value="0">0%</meter></div>
+            <p id="marginal-q0" class="coordinates"></p>
+            <p id="marginal-q1" class="coordinates"></p>
+          </div>
           <div class="actions"><button type="button" id="undo" disabled>Undo</button><button type="button" id="reset">Reset to |0⟩</button></div>
         </section>
       </div>
 
       <section class="panel circuit-panel" aria-labelledby="circuit-heading">
-        <h2 id="circuit-heading">Gate sequence <span id="step-count">0 steps</span></h2>
-        <div class="circuit"><span class="initial-state">|0⟩</span><ol id="gate-history" aria-label="Gates in application order"></ol></div>
+        <h2 id="circuit-heading">Gate sequence / circuit <span id="step-count">0 steps</span></h2>
+        <div class="circuit" tabindex="0" role="region" aria-label="Circuit, scroll horizontally for more steps"><span id="initial-state" class="initial-state">|0⟩</span><ol id="gate-history" aria-label="Gates in application order"></ol></div>
+        <div class="actions step-actions"><button type="button" id="previous-step" disabled>Previous step</button><button type="button" id="next-step" disabled>Next step</button><output id="viewed-step" aria-live="polite">Viewing step 0 of 0</output></div>
         <p class="muted">Gates run from left to right. Undo removes the last step.</p>
+        <p class="muted">Select a gate or use Previous/Next to inspect a step. Applying a gate at an earlier step replaces later steps.</p>
       </section>
       <noscript>This notebook needs JavaScript to calculate states and draw the sphere.</noscript>
     </main>

@@ -35,7 +35,8 @@ export function createBlochSphere(svg) {
   }
 
   const defs = element('defs', {});
-  const marker = element('marker', { id: 'state-arrowhead', markerWidth: 7, markerHeight: 7, refX: 5, refY: 3, orient: 'auto' });
+  const markerId = `${svg.id}-state-arrowhead`;
+  const marker = element('marker', { id: markerId, markerWidth: 7, markerHeight: 7, refX: 5, refY: 3, orient: 'auto' });
   marker.append(element('path', { d: 'M0,0 L6,3 L0,6 Z', fill: 'currentColor' }));
   defs.append(marker);
   svg.append(defs);
@@ -68,7 +69,7 @@ export function createBlochSphere(svg) {
   svg.append(element('circle', { cx: CENTER, cy: CENTER, r: 3, class: 'origin' }));
 
   const previous = element('line', { class: 'previous-vector' });
-  const current = element('line', { class: 'state-vector', 'marker-end': 'url(#state-arrowhead)' });
+  const current = element('line', { class: 'state-vector', 'marker-end': `url(#${markerId})` });
   const tip = element('circle', { r: 5, class: 'state-tip' });
   svg.append(previous, current, tip);
 
@@ -91,6 +92,7 @@ export function createBlochSphere(svg) {
 
     const origin = { x: 0, y: 0, z: 0 };
     positionLine(current, origin, state);
+    current.style.display = Math.hypot(state.x, state.y, state.z) < 1e-10 ? 'none' : '';
     const point = project(state);
     tip.setAttribute('cx', point.x);
     tip.setAttribute('cy', point.y);
@@ -138,6 +140,6 @@ export function createBlochSphere(svg) {
     state = vector;
     previousState = previousVector;
     draw();
-    svg.querySelector('desc').textContent = `Current Bloch coordinates: x ${vector.x.toFixed(3)}, y ${vector.y.toFixed(3)}, z ${vector.z.toFixed(3)}. The solid arrow shows the current state; the dashed arrow shows the previous state.`;
+    svg.querySelector('desc').textContent = `Current Bloch coordinates: x ${vector.x.toFixed(3)}, y ${vector.y.toFixed(3)}, z ${vector.z.toFixed(3)}. ${Math.hypot(vector.x, vector.y, vector.z) < 1e-10 ? 'The current state is a point at the center, representing a maximally mixed individual qubit.' : 'The solid arrow shows the current state.'} The dashed arrow shows the previous state.`;
   };
 }
