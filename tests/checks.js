@@ -104,5 +104,4 @@ for (const result of results) {
 }
 const failures = results.filter((result) => !result.passed).length;
 document.getElementById('summary').textContent = `${results.length - failures}/${results.length} passed.`;
-// Also expose the result for optional browser automation.
 window.testResults = { results, failures };

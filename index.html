@@ -12,18 +12,18 @@
     <main>
       <header>
         <span class="pixel-mark" aria-hidden="true"></span>
-        <div><h1>Qubit notebook</h1><p>One qubit. A few gates. See what changes.</p></div>
+        <div><h1>Qubit notebook</h1><p>Explore single-qubit gates.</p></div>
       </header>
 
       <div class="workspace">
         <section class="panel sphere-panel" aria-labelledby="sphere-heading">
           <h2 id="sphere-heading">The Bloch sphere</h2>
-          <svg id="bloch-sphere" viewBox="0 0 400 400" role="img" aria-labelledby="sphere-title sphere-description">
+          <svg id="bloch-sphere" viewBox="0 0 400 400" role="img" tabindex="0" aria-labelledby="sphere-title sphere-description" aria-describedby="sphere-help">
             <title id="sphere-title">Single-qubit Bloch sphere</title>
             <desc id="sphere-description">The state starts at the north pole, |0⟩.</desc>
           </svg>
           <p class="legend"><span class="swatch"></span> Current state <span class="swatch previous"></span> Previous</p>
-          <p class="muted">The sphere is a map of states. A gate moves the arrow.</p>
+          <p id="sphere-help" class="muted">Drag to rotate the view, or use the arrow keys.</p>
         </section>
 
         <section class="panel" aria-labelledby="controls-heading">
@@ -55,7 +55,6 @@
         <div class="circuit"><span class="initial-state">|0⟩</span><ol id="gate-history" aria-label="Gates in application order"></ol></div>
         <p class="muted">Gates run from left to right. Undo removes the last step.</p>
       </section>
-      <footer>A first sketch for learning. One pure qubit, with a fixed view.</footer>
       <noscript>This notebook needs JavaScript to calculate states and draw the sphere.</noscript>
     </main>
   </body>

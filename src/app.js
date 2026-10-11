@@ -3,7 +3,7 @@ import { createBlochSphere } from './bloch-sphere.js';
 
 const byId = (id) => document.getElementById(id);
 const drawSphere = createBlochSphere(byId('bloch-sphere'));
-// Retain each state so Undo restores it without reversing gates or accumulating errors.
+// Store states for Undo.
 const states = [zeroState()];
 const gates = [];
 

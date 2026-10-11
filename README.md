@@ -1,6 +1,6 @@
 # Qubit notebook
 
-A small, browser-based place to learn what gates do to one qubit. This is a reviewable starting point, not a full circuit editor.
+A browser app for exploring single-qubit gates.
 
 ## Run
 
@@ -18,6 +18,7 @@ Open http://localhost:8000. There is nothing to install or build. Python only se
 - Try **H → Z → H**: the arrow ends at `|1⟩`.
 - Try **H → S**: probabilities stay at 50/50, but the arrow moves from +x to +y. Phase matters even when probabilities stay the same.
 - Use Undo or Reset to revisit a step.
+- Drag the sphere to rotate the view. Touch dragging and arrow keys also work.
 - Open http://localhost:8000/tests/ to run the math and basic interface checks. Results appear on the page.
 
 ## Files
@@ -33,4 +34,4 @@ tests/index.html          Browser test runner
 tests/checks.js           Quantum math and basic interaction checks
 ```
 
-The first version supports one pure qubit, starting at `|0⟩`, and H, X, Y, Z, S, and T gates. The sphere uses a fixed view and updates immediately. The dashed arrow shows the previous state. Measurement, animation, arbitrary starting states, and multiple qubits are later steps.
+The app supports one pure qubit, starting at `|0⟩`, and H, X, Y, Z, S, and T gates. Gates update immediately. The dashed arrow shows the previous state. Rotating the view does not change the qubit. Measurement, animation, arbitrary starting states, and multiple qubits are later steps.

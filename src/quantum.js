@@ -45,7 +45,7 @@ export function probabilities(state) {
 }
 
 export function blochVector([alpha, beta]) {
-  // conjugate(alpha) * beta, written out to keep the conversion readable.
+  // x and y are twice the real and imaginary parts of conjugate(alpha) * beta.
   return {
     x: 2 * (alpha.re * beta.re + alpha.im * beta.im),
     y: 2 * (alpha.re * beta.im - alpha.im * beta.re),
